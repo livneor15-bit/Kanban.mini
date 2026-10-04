@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kanban Task Board</title>
+    <!-- Tailwind CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .task-card {
+            @apply bg-white rounded-lg shadow-md p-4 mb-2 flex items-center justify-between;
+        }
+        .delete-button, .move-button {
+            @apply px-2 py-1 text-sm font-medium bg-red-500 text-white rounded hover:bg-red-700 cursor-pointer;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-4">
+    <div class="max-w-md mx-auto">
+        <h1 class="text-2xl font-bold mb-4">Kanban Task Board</h1>
+        <div class="flex flex-col">
+            <div class="mb-4">
+                <input type="text" id="new-task" placeholder="Add a new task" class="border rounded px-3 py-2 w-full focus:outline-none" />
+                <button id="add-task-btn" class="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">Add Task</button>
+            </div>
+            <div>
+                <h2 class="text-xl font-bold mb-2">To Do</h2>
+                <ul id="to-do" class="task-list"></ul>
+            </div>
+            <div>
+                <h2 class="text-xl font-bold mb-2">Completed</h2>
+                <ul id="completed" class="task-list"></ul>
+            </div>
+        </div>
+
+        <script>
+            document.getElementById('add-task-btn').addEventListener('click', () => {
+                const taskInput = document.getElementById('new-task');
+                const taskText = taskInput.value.trim();
+                if (taskText) {
+                    addTask(taskText, 'to-do');
+                    taskInput.value = '';
+                }
+            });
+
+            function addTask(text, listId) {
+                const taskList = document.getElementById(listId);
+                const taskCard = document.createElement('li');
+                taskCard.classList.add('task-card');
+
+                taskCard.innerHTML = `
+                    <span>${text}</span>
+                    <div class="buttons">
+                        <button class="move-button" data-list="completed">Move to Completed</button>
+                        <button class="delete-button">Delete</button>
+                    </div>
+                `;
+
+                const moveButton = taskCard.querySelector('.move-button');
+                moveButton.addEventListener('click', () => {
+                    const targetListId = moveButton.getAttribute('data-list');
+                    moveTask(taskCard, listId, targetListId);
+                });
+
+                const deleteButton = taskCard.querySelector('.delete-button');
+                deleteButton.addEventListener('click', () => {
+                    taskCard.remove();
+                });
+
+                taskList.appendChild(taskCard);
+            }
+
+            function moveTask(taskCard, fromListId, toListId) {
+                const fromList = document.getElementById(fromListId);
+                const toList = document.getElementById(toListId);
+                fromList.removeChild(taskCard);
+                toList.appendChild(taskCard);
+            }
+        </script>
+    </div>
+</body>
+</html>
